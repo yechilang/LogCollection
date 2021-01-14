@@ -62,7 +62,7 @@
         // 参考
         // http://blog.xianqu.org/2015/08/pod-resources/
         // https://juejin.cn/post/6844903854245412877
-        _bundle = [NSBundle bundleWithPath:[NSBundle.mainBundle pathForResource:@"LogCollection" ofType:@"bundle"]];
+        _bundle = [NSBundle bundleWithPath:[[NSBundle bundleForClass:[ITCLogCollectionManager class]] pathForResource:@"LogCollection" ofType:@"bundle"]];
         
         [self configRoot]; // 配置根目录
         [self cleanZip]; // 清除旧压缩包
