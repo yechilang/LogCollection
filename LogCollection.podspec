@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name        = 'LogCollection'
-  s.version     = '1.0.1'
+  s.version     = '1.0.2'
   s.summary     = '一个方便使用的日志采集库'
   s.homepage    = 'https://github.com/yechilang/LogCollection'
   s.license    = 'MIT'

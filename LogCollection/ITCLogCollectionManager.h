@@ -33,6 +33,26 @@
  5. 日志要附带以下信息, 并没条日志需要换行
  [NSString stringWithFormat:@"%@ %s %d %s\n\n", ITCLogCollectionManager.timeString, __FILE_NAME__, __LINE__, __func__]
  6. 使用宏去修改NSLog
+ 6-1需要重新处理3种不同的Log
+ #if DEBUG
+ #define DebugLog(FORMAT, ...) NSLog(FORMAT, ##__VA_ARGS__);
+ #define NetworkLog(FORMAT, ...) NSLog(FORMAT, ##__VA_ARGS__);
+ #define DeviceLog(FORMAT, ...) NSLog(FORMAT, ##__VA_ARGS__);
+ #else
+ #define DebugLog(FORMAT, ...) [ITCLogCollectionManager.shareManager insertDebugInfo:[NSString stringWithFormat:@"Time: %@ File: %s Line: %d Method: %s\ncontent: %@\n\n", ITCLogCollectionManager.timeString, __FILE_NAME__, __LINE__, __func__, [NSString stringWithFormat:FORMAT, ##__VA_ARGS__]]];
+ #define NetworkLog(FORMAT, ...) [ITCLogCollectionManager.shareManager insertNetworkInfo:[NSString stringWithFormat:@"Time: %@ File: %s Line: %d Method: %s\ncontent: %@\n\n", ITCLogCollectionManager.timeString, __FILE_NAME__, __LINE__, __func__, [NSString stringWithFormat:FORMAT, ##__VA_ARGS__]]];
+ #define DeviceLog(FORMAT, ...) [ITCLogCollectionManager.shareManager insertDeviceInfo:[NSString stringWithFormat:@"Time: %@ File: %s Line: %d Method: %s\ncontent: %@\n\n", ITCLogCollectionManager.timeString, __FILE_NAME__, __LINE__, __func__, [NSString stringWithFormat:FORMAT, ##__VA_ARGS__]]];
+ #endif
+ 
+ 6-2
+ 因为Device信息可以在AppDelegate出使用 [ITCLogCollectionManager.shareManager insertDeviceData]; 一次性插入
+ 而Network信息可以在同一处理网络请求的接口处同一使用 [ITCLogCollectionManager.shareManager insertNetworkInfo:@""]; 处理
+ 因此剩下的Debug信息可以直接写个NSLog宏去替换一次性处理
+ #if DEBUG
+ #define NSLog(FORMAT, ...) NSLog(FORMAT, ##__VA_ARGS__);
+ #else
+ #define NSLog(FORMAT, ...) [ITCLogCollectionManager.shareManager insertDebugInfo:[NSString stringWithFormat:@"Time: %@ File: %s Line: %d Method: %s\ncontent: %@\n\n", ITCLogCollectionManager.timeString, __FILE_NAME__, __LINE__, __func__, [NSString stringWithFormat:FORMAT, ##__VA_ARGS__]]]; NSLog(FORMAT, ##__VA_ARGS__);
+ #endif
  
  注意:
  如果使用cache再一次性存储的话, 需要防止强退导致日志没写入
