@@ -141,6 +141,17 @@
 /// 插入信息
 /// @param info 需要插入的信息
 - (void)insertInfo:(NSString *)info {
+    if (NSThread.isMainThread) {
+        [self handleInfo:info];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self handleInfo:info];
+        });
+    }
+}
+
+/// 处理信息
+- (void)handleInfo:(NSString *)info {
     if (_currentFileSize >= _maxFileSize) { // 超过指定大小, 更新mark和写入路径
         if (_cache) {
             [self insertInfoData];
